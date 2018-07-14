@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 import java.io.EOFException;
@@ -130,14 +131,8 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 			int newLineCount = 0;
 			int k = 1;
 
-			while (true) {
-				if (myInputSplitBuffer[myInputSplitBuffer.length - k] == '\n') {
-					k++;
-					newLineCount++;
-				} else
-					break;
-
-			}
+			while (myInputSplitBuffer[myInputSplitBuffer.length - k++] == '\n')
+				newLineCount++;
 
 			byte[] tempBuffer = new byte[(int) split.getLength() - newLineCount];
 			System.arraycopy(myInputSplitBuffer, 0, tempBuffer, 0, myInputSplitBuffer.length - newLineCount);
@@ -346,19 +341,14 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 
 				currRecord.setStartKey(0);
 				nextsplitValue = true;
+				
+				byte b;
 
 				try {
 
-					while (true) {
+					while ((b = inputFile.readByte()) != '\n')
+							borderBuffer[j++] = b;
 
-						byte b = (byte) inputFile.readByte();
-
-						if (b == '\n') {
-							break;
-						}
-
-						borderBuffer[j++] = b;
-					}
 				} catch (EOFException e) {
 					nextsplitValue = false;
 				}
@@ -408,21 +398,15 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 					posBuffer = currRecord.getEndKey() + 1;
 					currRecord.setStartValue(posBuffer);
 				}
+				
+				byte b;
 
 				try {
-					while (true) {
-
-						byte b = (byte) inputFile.readByte();
-
-						if (b == '+')
-							break;
-
+					while ((b = inputFile.readByte()) != '+') 
 						if (b != '\n')
 							borderBuffer[posBuffer++] = b;
-					}
-				} catch (EOFException e) {
-
-				}
+					
+				} catch (EOFException e) {}
 
 				currRecord.setEndValue(posBuffer - 1);
 
@@ -431,25 +415,15 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 
 				try {
 
-					while (true) {
-						byte b = (byte) inputFile.readByte();
-						if (b == '\n')
-							break;
+					while ((b = inputFile.readByte()) != '\n')
 						borderBuffer[posBuffer++] = b;
-
-					}
+					
 					currRecord.setEndKey2(posBuffer - 1);
 
 					currRecord.setStartQuality(posBuffer);
 
-					while (true) {
-						byte b = (byte) inputFile.readByte();
-
-						if (b != '\n') {
-							borderBuffer[posBuffer++] = b;
-						} else
-							break;
-					}
+					while ((b = inputFile.readByte()) != '\n')
+						borderBuffer[posBuffer++] = b;
 
 				} catch (EOFException e) {
 					// End file.
@@ -481,6 +455,8 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 
 				currRecord.setStartValue(j);
 				currRecord.setEndValue(j + v - 1);
+				
+				byte b;
 
 				if (nextsplitSecondHeader) {
 					int start = currRecord.getStartKey2();
@@ -496,15 +472,10 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 					currRecord.setEndKey2(posBuffer);
 					posBuffer++;
 
-					while (true) {
-
-						byte b = (byte) inputFile.readByte();
-
-						if (b == '\n')
-							break;
+					while ((b = inputFile.readByte()) != '\n')
 						borderBuffer[posBuffer++] = b;
 
-					}
+					
 					currRecord.setEndKey2(posBuffer - 1);
 					currRecord.setStartQuality(posBuffer);
 
@@ -531,17 +502,11 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 				}
 
 				try {
-					while (true) {
 
-						byte b = (byte) inputFile.readByte();
-
-						if (b != '\n')
-							borderBuffer[posBuffer++] = b;
-						else
-							break;
-					}
-				} catch (EOFException e) {
-				}
+					while ((b = inputFile.readByte()) != '\n')
+						borderBuffer[posBuffer++] = b;
+					
+				} catch (EOFException e) {}
 
 				currRecord.setEndQuality(posBuffer - 1);
 

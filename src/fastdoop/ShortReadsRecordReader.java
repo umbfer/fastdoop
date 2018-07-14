@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 import java.io.EOFException;
@@ -263,21 +264,14 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 				currValue.setStartKey(0);
 				nextsplitValue = true;
 
+				byte b;
+				
 				try {
-					while (true) {
-
-						byte b = (byte) inputFile.readByte();
-
-						if (b == '\n') {
-							break;
-						}
-
+					
+					while ((b = inputFile.readByte()) != '\n')
 						borderBuffer[j++] = b;
-
-					}
-				} catch (EOFException e) {
-
-				}
+					
+				} catch (EOFException e) {}
 
 				if (!nextsplitValue)
 					return false;
@@ -319,17 +313,11 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 				byte b = 'a';
 
 				try {
-					while (true) {
-
-						b = (byte) inputFile.readByte();
-
-						if (b == '>')
-							break;
-
+					
+					while ((b = inputFile.readByte()) != '>') 
 						borderBuffer[posBuffer++] = b;
-					}
-				} catch (EOFException e) {
-				}
+					
+				} catch (EOFException e) {}
 
 				if (b == '>')
 					currValue.setEndValue(posBuffer - 2);
