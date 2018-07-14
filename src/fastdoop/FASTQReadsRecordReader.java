@@ -51,8 +51,6 @@ import org.apache.hadoop.mapreduce.RecordReader;
 
 public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> {
 
-	public static final int KV_BUFFER_SIZE = 4096;
-
 	private FSDataInputStream inputFile;
 
 	private long startByte;
@@ -99,6 +97,8 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 
 		posBuffer = 0;
 		Configuration job = context.getConfiguration();
+		
+		int look_ahead_buffer_size = Integer.parseInt(context.getConfiguration().get("look_ahead_buffer_size", "4096"));
 
 		/*
 		 * We open the file corresponding to the input split and
@@ -121,7 +121,7 @@ public class FASTQReadsRecordReader extends RecordReader<NullWritable, QRecord> 
 		myInputSplitBuffer = new byte[(int) split.getLength()];
 		currRecord.setBuffer(myInputSplitBuffer);
 
-		borderBuffer = new byte[KV_BUFFER_SIZE];
+		borderBuffer = new byte[look_ahead_buffer_size];
 
 		sizeBuffer = inputFile.read(startByte, myInputSplitBuffer, 0, myInputSplitBuffer.length);
 		inputFile.seek(startByte + sizeBuffer);

@@ -67,8 +67,6 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 
 	private Record currValue;
 
-	public static final int KV_BUFFER_SIZE = 2000; 
-
 	/*
 	 * Used to buffer the content of the input split
 	 */
@@ -106,6 +104,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 		posBuffer = 0;
 		Configuration job = context.getConfiguration();
 
+		int look_ahead_buffer_size = Integer.parseInt(context.getConfiguration().get("look_ahead_buffer_size", "2000"));
 
 		/*
 		 * We open the file corresponding to the input split and
@@ -129,7 +128,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 		myInputSplitBuffer = new byte[(int) split.getLength()];
 		currValue.setBuffer(myInputSplitBuffer);
 
-		borderBuffer = new byte[KV_BUFFER_SIZE];
+		borderBuffer = new byte[look_ahead_buffer_size];
 
 		sizeBuffer = inputFile.read(startByte, myInputSplitBuffer, 0, myInputSplitBuffer.length);
 		inputFile.seek(startByte + sizeBuffer);

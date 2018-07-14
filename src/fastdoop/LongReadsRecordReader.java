@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class LongReadsRecordReader extends RecordReader<NullWritable, PartialSeq
 		 * should be retrieved together with the bytes of the current
 		 * input split.  
 		 */
-		k = Integer.parseInt(context.getConfiguration().get("k"));
+		k = Integer.parseInt(context.getConfiguration().get("k", "10"));
 
 		/*
 		 * We open the file corresponding to the input split and
