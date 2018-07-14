@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop.test;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.util.*;
 
+import fastdoop.FASTAlongInputFileFormat;
 import fastdoop.FASTAshortInputFileFormat;
 import fastdoop.Record;
 
@@ -32,14 +34,13 @@ import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
 
 /**
+ * A Simple Hadoop application useful to test {@code FASTAlongInputFileFormat}.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- *          Date: Nov, 22 2016
- * 
- *          A Simple Hadoop application useful to test FASTAlongInputFileFormat
+ * @see FASTAlongInputFileFormat
  */
 
 

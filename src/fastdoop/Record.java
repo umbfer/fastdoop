@@ -15,26 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
+import java.io.Serializable;
+
 /**
- * 
+ * Utility class used to represent as a record a sequence existing 
+ * in a FASTA file.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
- * 
- *          Date: Nov, 22 2016
- * 
- *          Utility class used to represent as a record a sequence existing in a
- *          FASTA file
- * 
  */
 
-public class Record {
-
-	private byte[] buffer; 
-	private int startKey, endKey; 
+public class Record implements Serializable { 
+	 
+	private static final long serialVersionUID = 8015377043208271607L; 
+	 
+	private byte[] buffer;
+	private int startKey, endKey;
 	private int startValue, endValue;
 
 	public String getKey() {
@@ -50,43 +50,44 @@ public class Record {
 		return ">" + this.getKey() + "\n" + this.getValue();
 	}
 
-	public byte[] getBuffer() { 
-	    return buffer; 
-	  } 
-	 
-	  public void setBuffer(byte[] buffer) { 
-	    this.buffer = buffer; 
-	  } 
-	 
-	  public int getStartKey() { 
-	    return startKey; 
-	  } 
-	 
-	  public void setStartKey(int startKey) { 
-	    this.startKey = startKey; 
-	  } 
-	 
-	  public int getEndKey() { 
-	    return endKey; 
-	  } 
-	 
-	  public void setEndKey(int endKey) { 
-	    this.endKey = endKey; 
-	  } 
-	 
-	  public int getStartValue() { 
-	    return startValue; 
-	  } 
-	 
-	  public void setStartValue(int startValue) { 
-	    this.startValue = startValue; 
-	  } 
-	 
-	  public int getEndValue() { 
-	    return endValue; 
-	  } 
-	 
-	  public void setEndValue(int endValue) { 
-	    this.endValue = endValue; 
-	  } 
+	public byte[] getBuffer() {
+		return buffer;
+	}
+
+	public void setBuffer(byte[] buffer) {
+		this.buffer = buffer;
+	}
+
+	public int getStartKey() {
+		return startKey;
+	}
+
+	public void setStartKey(int startKey) {
+		this.startKey = startKey;
+	}
+
+	public int getEndKey() {
+		return endKey;
+	}
+
+	public void setEndKey(int endKey) {
+		this.endKey = endKey;
+	}
+
+	public int getStartValue() {
+		return startValue;
+	}
+
+	public void setStartValue(int startValue) {
+		this.startValue = startValue;
+	}
+
+	public int getEndValue() {
+		return endValue;
+	}
+
+	public void setEndValue(int endValue) {
+		this.endValue = endValue;
+	}
+
 }

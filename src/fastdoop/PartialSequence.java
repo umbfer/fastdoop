@@ -18,6 +18,8 @@
 
 package fastdoop;
 
+import java.io.Serializable;
+
 /**
  * This class is used to store fragments of a long input FASTA 
  * sequence as an array of bytes.
@@ -26,7 +28,9 @@ package fastdoop;
  * 
  * @version 1.0  
  */
-public class PartialSequence{
+public class PartialSequence implements Serializable { 
+	 
+	private static final long serialVersionUID = 6820343484812253133L; 
 
 	private String header;
 	private byte[] buffer;

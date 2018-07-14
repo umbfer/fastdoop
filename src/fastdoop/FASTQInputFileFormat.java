@@ -15,32 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 /**
- * 
+ * A {@code FileInputFormat} for reading FASTQ files.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- *          Date: Nov, 22 2016
- * 
- *          A FileInputFormat for reading FASTQ files
- * 
+ * @see FileInputFormat
  */
-public class FASTQInputFileFormat extends FileInputFormat<NullWritable, QRecord> {
+public class FASTQInputFileFormat extends FileInputFormat<Text, QRecord> {
 
 	@Override
-	public RecordReader<NullWritable, QRecord> createRecordReader(InputSplit split, TaskAttemptContext context)
+	public RecordReader<Text, QRecord> createRecordReader(InputSplit split, TaskAttemptContext context)
 			throws IOException, InterruptedException {
 
 		return new FASTQReadsRecordReader();

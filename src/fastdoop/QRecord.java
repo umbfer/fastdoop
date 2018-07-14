@@ -18,6 +18,8 @@
 
 package fastdoop;
 
+import java.io.Serializable;
+
 /**
  * Utility class used to represent as a record a sequence existing 
  * in a FASTQ file.
@@ -26,7 +28,9 @@ package fastdoop;
  * 
  * @version 1.0
  */
-public class QRecord {
+public class QRecord implements Serializable { 
+	 
+	private static final long serialVersionUID = -7555239567456193078L; 
 
 	private byte[] buffer;
 	private int startKey, endKey;

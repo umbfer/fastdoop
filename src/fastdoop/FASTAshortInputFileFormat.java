@@ -15,30 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 /**
+ * A {@code FileInputFormat} for reading FASTA files containing 
+ * short sequences.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- *          Date: Nov, 22 2016
- * 
- *          A FileInputFormat for reading FASTA files containing short sequences
+ * @see FileInputFormat
  */
-public class FASTAshortInputFileFormat extends FileInputFormat<NullWritable, Record> {
+public class FASTAshortInputFileFormat extends FileInputFormat<Text, Record> {
 
 	@Override
-	public RecordReader<NullWritable, Record> createRecordReader(InputSplit split, TaskAttemptContext context)
+	public RecordReader<Text, Record> createRecordReader(InputSplit split, TaskAttemptContext context)
 			throws IOException, InterruptedException {
 		return new ShortReadsRecordReader();
 	}

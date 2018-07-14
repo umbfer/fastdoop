@@ -27,20 +27,20 @@ import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.util.*;
 
 import fastdoop.FASTAlongInputFileFormat;
+import fastdoop.FASTAshortInputFileFormat;
 import fastdoop.PartialSequence;
 
 import org.apache.hadoop.mapreduce.lib.input.*; 
 import org.apache.hadoop.mapreduce.lib.output.*;
 
 /**
+ * A Simple Hadoop application useful to test {@code FASTAshortInputFileFormat}.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- *          Date: Nov, 22 2016
- * 
- *          A Simple Hadoop application useful to test FASTAshortInputFileFormat
+ * @see FASTAshortInputFileFormat
  */
 
 

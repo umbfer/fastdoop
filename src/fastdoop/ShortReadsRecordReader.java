@@ -21,7 +21,7 @@ package fastdoop;
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.conf.Configuration;
@@ -57,13 +57,13 @@ import org.apache.hadoop.mapreduce.RecordReader;
  * @see InputSplit
  */
 
-public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
+public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 
 	private FSDataInputStream inputFile;
 
 	private long startByte;
 
-	private NullWritable currKey;
+	private Text currKey;
 
 	private Record currValue;
 
@@ -116,7 +116,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 		inputFile = path.getFileSystem(job).open(path);
 		inputFile.seek(startByte);
 
-		currKey = NullWritable.get();
+		currKey = new Text("null");
 		currValue = new Record();
 
 		/*
@@ -356,7 +356,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 	}
 
 	@Override
-	public NullWritable getCurrentKey() throws IOException, InterruptedException {
+	public Text getCurrentKey() throws IOException, InterruptedException {
 		return currKey;
 	}
 
