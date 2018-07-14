@@ -1,4 +1,5 @@
 # FASTdoop
+[![Analytics](https://ga-beacon.appspot.com/UA-122272492-1/fastdoop)](https://github.com/umbfer/fastdoop)
 
 ### Introduction
 
