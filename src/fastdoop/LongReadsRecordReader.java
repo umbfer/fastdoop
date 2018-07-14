@@ -30,31 +30,29 @@ import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.RecordReader;
 
 /**
+ * This class reads {@literal <key, value>} pairs from an {@code InputSplit}.
+ * The input file is in FASTA format and contains a single long sequence.
+ * A FASTA record has a header line that is the key, and data lines
+ * that are the value.
+ * {@literal >header...}
+ * data
+ * ...
+ * 
+ * 
+ * Example:
+ * {@literal >Seq1}
+ * TAATCCCAAATGATTATATCCTTCTCCGATCGCTAGCTATACCTTCCAGGCGATGAACTTAGACGGAATCCACTTTGCTA
+ * CAACGCGATGACTCAACCGCCATGGTGGTACTAGTCGCGGAAAAGAAAGAGTAAACGCCAACGGGCTAGACACACTAATC
+ * CTCCGTCCCCAACAGGTATGATACCGTTGGCTTCACTTCTACTACATTCGTAATCTCTTTGTCAGTCCTCCCGTACGTTG
+ * GCAAAGGTTCACTGGAAAAATTGCCGACGCACAGGTGCCGGGCCGTGAATAGGGCCAGATGAACAAGGAAATAATCACCA
+ * CCGAGGTGTGACATGCCCTCTCGGGCAACCACTCTTCCTCATACCCCCTCTGGGCTAACTCGGAGCAAAGAACTTGGTAA
+ * ...
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- *          Date: Nov, 22 2016
- * 
- *          This class reads <key, value> pairs from an InputSplit.
- *          The input file is in FASTA format and contains a single long
- *          sequence.
- *          A FASTA record has a header line that is the key, and data lines
- *          that are the value.
- *          >header...
- *          data
- *          ...
- * 
- * 
- *          Example:
- *          >Seq1
- *          TAATCCCAAATGATTATATCCTTCTCCGATCGCTAGCTATACCTTCCAGGCGATGAACTTAGACGGAATCCACTTTGCTA
- *          CAACGCGATGACTCAACCGCCATGGTGGTACTAGTCGCGGAAAAGAAAGAGTAAACGCCAACGGGCTAGACACACTAATC
- *          CTCCGTCCCCAACAGGTATGATACCGTTGGCTTCACTTCTACTACATTCGTAATCTCTTTGTCAGTCCTCCCGTACGTTG
- *          GCAAAGGTTCACTGGAAAAATTGCCGACGCACAGGTGCCGGGCCGTGAATAGGGCCAGATGAACAAGGAAATAATCACCA
- *          CCGAGGTGTGACATGCCCTCTCGGGCAACCACTCTTCCTCATACCCCCTCTGGGCTAACTCGGAGCAAAGAACTTGGTAA
- *          ...
+ * @see InputSplit
  */
 public class LongReadsRecordReader extends RecordReader<NullWritable, PartialSequence> {
 
@@ -113,7 +111,7 @@ public class LongReadsRecordReader extends RecordReader<NullWritable, PartialSeq
 		int otherbytesToReads = k + 2;
 
 		byte[] myInputSplitBuffer = new byte[(inputSplitSize + otherbytesToReads)];
-		currValue.buffer = myInputSplitBuffer;
+		currValue.setBuffer(myInputSplitBuffer);
 
 		int sizeBuffer1 = inputFile.read(startByte, myInputSplitBuffer, 0, inputSplitSize);
 
@@ -160,10 +158,10 @@ public class LongReadsRecordReader extends RecordReader<NullWritable, PartialSeq
 		 * to process its whole content
 		 */
 		if (!lastInputSplit) {
-			currValue.bytesToProcess = sizeBuffer1 - posBuffer;
+			currValue.setBytesToProcess(sizeBuffer1 - posBuffer);
 
 			if (sizeBuffer2 < (k - 1)) {
-				currValue.bytesToProcess -= ((k - 1) - sizeBuffer2);
+				currValue.setBytesToProcess(currValue.getBytesToProcess() - ((k - 1) - sizeBuffer2));
 			}
 
 		} else {
@@ -181,16 +179,16 @@ public class LongReadsRecordReader extends RecordReader<NullWritable, PartialSeq
 				c++;
 			}
 
-			currValue.bytesToProcess = (sizeBuffer1 - posBuffer) - k + 1 - c;
-			if (currValue.bytesToProcess <= 0) {
+			currValue.setBytesToProcess((sizeBuffer1 - posBuffer) - k + 1 - c);
+			if (currValue.getBytesToProcess() <= 0) {
 				endMyInputSplit = true;
 			}
 
 		}
 
-		currValue.header = path.getName();
-		currValue.startValue = posBuffer;
-		currValue.endValue = sizeBuffer1 + sizeBuffer2 - 1;
+		currValue.setHeader(path.getName());
+		currValue.setStartValue(posBuffer);
+		currValue.setEndValue(sizeBuffer1 + sizeBuffer2 - 1);
 
 	}
 

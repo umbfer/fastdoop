@@ -15,32 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 /**
+ * This class is used to store fragments of a long input FASTA 
+ * sequence as an array of bytes.
  * 
  * @author Gianluca Roscigno
  * 
- * @version 1.0
- * 
- *          Date: Nov, 22 2016
- * 
- *          This class is used to store fragments of a long input FASTA
- *          sequence as an array of bytes
- *
+ * @version 1.0  
  */
 public class PartialSequence{
 
-	public String header;
-	public byte[] buffer;
-	public int startValue; 
-	public int endValue; 
-	public int bytesToProcess; 
-
-	public PartialSequence() {
-		super();
-	}
-
+	private String header;
+	private byte[] buffer;
+	private int startValue; 
+	private int endValue; 
+	private int bytesToProcess;
 
 	public String getKey(){
 		return header;
@@ -56,8 +48,8 @@ public class PartialSequence{
 	
 	public String toString2() {
 		
-		if(startValue>0)
-			return ">"+this.getKey()+"\n"+this.getValue2();
+		if(startValue > 0)
+			return ">" + this.getKey() + "\n" + this.getValue2();
 		else
 			return this.getValue2();
 
@@ -66,10 +58,50 @@ public class PartialSequence{
 	@Override
 	public String toString() {
 		return "PartialSequence [header=" + header + 
-				", bufferSize=" + (endValue-startValue+1) +
-				", startValue=" + startValue
-		+ ", endValue=" + endValue + ", bytesToProcess="
-		+ bytesToProcess + "]";
+				", bufferSize=" + (endValue - startValue + 1) +
+				", startValue=" + startValue + 
+				", endValue=" + endValue + 
+				", bytesToProcess=" + bytesToProcess + "]";
+	}
+
+	public byte[] getBuffer() {
+		return buffer;
+	}
+
+	public void setBuffer(byte[] buffer) {
+		this.buffer = buffer;
+	}
+
+	public int getBytesToProcess() {
+		return bytesToProcess;
+	}
+
+	public void setBytesToProcess(int bytesToProcess) {
+		this.bytesToProcess = bytesToProcess;
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
+	public int getStartValue() {
+		return startValue;
+	}
+
+	public void setStartValue(int startValue) {
+		this.startValue = startValue;
+	}
+
+	public int getEndValue() {
+		return endValue;
+	}
+
+	public void setEndValue(int endValue) {
+		this.endValue = endValue;
 	}
 
 	

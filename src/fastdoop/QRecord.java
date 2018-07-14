@@ -15,29 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fastdoop;
 
 /**
+ * Utility class used to represent as a record a sequence existing 
+ * in a FASTQ file.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
- * 
- *          Date: Nov, 22 2016
- * 
- *          Utility class used to represent as a record a sequence existing in a
- *          FASTQ file
- * 
  */
 public class QRecord {
 
-	public byte[] buffer;
-	public int startKey, endKey, startValue, endValue, startKey2, endKey2, startQuality, endQuality;
-	public boolean keyReply;
-
-	public QRecord() {
-		super();
-	}
+	private byte[] buffer;
+	private int startKey, endKey;
+	private int startValue, endValue;
+	private int startKey2, endKey2;
+	private int startQuality, endQuality;
 
 	public String getKey() {
 		return new String(buffer, startKey, (endKey - startKey + 1));
@@ -72,6 +67,66 @@ public class QRecord {
 
 	public int getEndValue() {
 		return endValue;
+	}
+
+	public void setBuffer(byte[] buffer) {
+		this.buffer = buffer;
+	}
+
+	public int getStartKey() {
+		return startKey;
+	}
+
+	public void setStartKey(int startKey) {
+		this.startKey = startKey;
+	}
+
+	public int getEndKey() {
+		return endKey;
+	}
+
+	public void setEndKey(int endKey) {
+		this.endKey = endKey;
+	}
+
+	public void setStartValue(int startValue) {
+		this.startValue = startValue;
+	}
+
+	public void setEndValue(int endValue) {
+		this.endValue = endValue;
+	}
+
+	public int getStartKey2() {
+		return startKey2;
+	}
+
+	public void setStartKey2(int startKey2) {
+		this.startKey2 = startKey2;
+	}
+
+	public int getEndKey2() {
+		return endKey2;
+	}
+
+	public void setEndKey2(int endKey2) {
+		this.endKey2 = endKey2;
+	}
+
+	public int getStartQuality() {
+		return startQuality;
+	}
+
+	public void setStartQuality(int startQuality) {
+		this.startQuality = startQuality;
+	}
+
+	public int getEndQuality() {
+		return endQuality;
+	}
+
+	public void setEndQuality(int endQuality) {
+		this.endQuality = endQuality;
 	}
 
 }

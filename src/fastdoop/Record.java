@@ -33,12 +33,9 @@ package fastdoop;
 
 public class Record {
 
-	public byte[] buffer;
-	public int startKey, endKey, startValue, endValue;
-
-	public Record() {
-		super();
-	}
+	private byte[] buffer; 
+	private int startKey, endKey; 
+	private int startValue, endValue;
 
 	public String getKey() {
 		return new String(buffer, startKey, (endKey - startKey + 1));
@@ -53,4 +50,43 @@ public class Record {
 		return ">" + this.getKey() + "\n" + this.getValue();
 	}
 
+	public byte[] getBuffer() { 
+	    return buffer; 
+	  } 
+	 
+	  public void setBuffer(byte[] buffer) { 
+	    this.buffer = buffer; 
+	  } 
+	 
+	  public int getStartKey() { 
+	    return startKey; 
+	  } 
+	 
+	  public void setStartKey(int startKey) { 
+	    this.startKey = startKey; 
+	  } 
+	 
+	  public int getEndKey() { 
+	    return endKey; 
+	  } 
+	 
+	  public void setEndKey(int endKey) { 
+	    this.endKey = endKey; 
+	  } 
+	 
+	  public int getStartValue() { 
+	    return startValue; 
+	  } 
+	 
+	  public void setStartValue(int startValue) { 
+	    this.startValue = startValue; 
+	  } 
+	 
+	  public int getEndValue() { 
+	    return endValue; 
+	  } 
+	 
+	  public void setEndValue(int endValue) { 
+	    this.endValue = endValue; 
+	  } 
 }

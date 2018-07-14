@@ -29,32 +29,31 @@ import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.RecordReader;
 
 /**
+ * This class reads {@literal <key, value>} pairs from an {@code InputSplit}.
+ * The input file is in FASTA format.
+ * A FASTA record has a header line that is the key, and data lines
+ * that are the value.
+ * {@literal >header...}
+ * data
+ * ...
+ * 
+ * 
+ * Example:
+ * {@literal >Seq1}
+ * TAATCCCAAATGATTATATCCTTCTCCGATCGCTAGCTATACCTTCCAGGCGATGAACTTAGACGGAATCCACTTTGCTA
+ * CAACGCGATGACTCAACCGCCATGGTGGTACTAGTCGCGGAAAAGAAAGAGTAAACGCCAACGGGCTAGACACACTAATC
+ * CTCCGTCCCCAACAGGTATGATACCGTTGGCTTCACTTCTA
+ * {@literal >Seq2}
+ * CTACATTCGTAATCTCTTTGTCAGTCCTCCCGTACGTTGGCAAAGGTTCACTGGAAAAATTGCCGACGCACAGGTGCCGG
+ * GCCGTGAATAGGGCCAGATGAACAAGGAAATAATCACCACCGAGGTGTGACATGCCCTCTCGGGCAACCACTCTTCCTCA
+ * TACCCCCTCTGGGCTAACTCGGAGCAAAGAACTTGGTAA
+ * ...
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- *          Date: Nov, 22 2016
- * 
- *          This class reads <key, value> pairs from an InputSplit.
- *          The input file is in FASTA format.
- *          A FASTA record has a header line that is the key, and data lines
- *          that are the value.
- *          >header...
- *          data
- *          ...
- * 
- * 
- *          Example:
- *          >Seq1
- *          TAATCCCAAATGATTATATCCTTCTCCGATCGCTAGCTATACCTTCCAGGCGATGAACTTAGACGGAATCCACTTTGCTA
- *          CAACGCGATGACTCAACCGCCATGGTGGTACTAGTCGCGGAAAAGAAAGAGTAAACGCCAACGGGCTAGACACACTAATC
- *          CTCCGTCCCCAACAGGTATGATACCGTTGGCTTCACTTCTA
- *          >Seq2
- *          CTACATTCGTAATCTCTTTGTCAGTCCTCCCGTACGTTGGCAAAGGTTCACTGGAAAAATTGCCGACGCACAGGTGCCGG
- *          GCCGTGAATAGGGCCAGATGAACAAGGAAATAATCACCACCGAGGTGTGACATGCCCTCTCGGGCAACCACTCTTCCTCA
- *          TACCCCCTCTGGGCTAACTCGGAGCAAAGAACTTGGTAA
- *          ...
+ * @see InputSplit
  */
 
 public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
@@ -127,7 +126,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 		 */
 
 		myInputSplitBuffer = new byte[(int) split.getLength()];
-		currValue.buffer = myInputSplitBuffer;
+		currValue.setBuffer(myInputSplitBuffer);
 
 		borderBuffer = new byte[KV_BUFFER_SIZE];
 
@@ -166,7 +165,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 		boolean nextsplitKey = false;
 		boolean nextsplitValue = false;
 
-		currValue.startKey = posBuffer;
+		currValue.setStartKey(posBuffer);
 
 		/*
 		 * We look for the next short sequence my moving posBuffer until a
@@ -189,7 +188,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 			nextsplitKey = true;
 		}
 
-		currValue.endKey = (posBuffer - 1);
+		currValue.setEndKey(posBuffer - 1);
 
 		if (!endMyInputSplit) {
 			/*
@@ -197,14 +196,14 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 			 * process, we move forward the pointer
 			 * until the symbol '>' is found
 			 */
-			currValue.startValue = (posBuffer + 1);
+			currValue.setStartValue(posBuffer + 1);
 
 			try {
 				while (myInputSplitBuffer[posBuffer] != '>') {
 					posBuffer++;
 				}
 
-				currValue.endValue = (posBuffer - 2);
+				currValue.setEndValue(posBuffer - 2);
 				posBuffer++;
 
 			} catch (ArrayIndexOutOfBoundsException e) {
@@ -215,7 +214,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 				 */
 				endMyInputSplit = true;
 				nextsplitValue = true;
-				currValue.endValue = (posBuffer - 1);
+				currValue.setEndValue(posBuffer - 1);
 
 			}
 
@@ -240,7 +239,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 					c++;
 				}
 
-				currValue.endValue = (posBuffer - 1) - c;
+				currValue.setEndValue(posBuffer - 1 - c);
 
 				return true;
 			}
@@ -253,15 +252,15 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 			 */
 			if (nextsplitKey) {
 
-				currValue.buffer = (borderBuffer);
+				currValue.setBuffer(borderBuffer);
 
-				int j = posBuffer - currValue.startKey;
+				int j = posBuffer - currValue.getStartKey();
 
-				System.arraycopy(myInputSplitBuffer, currValue.startKey, borderBuffer, 0, j);
+				System.arraycopy(myInputSplitBuffer, currValue.getStartKey(), borderBuffer, 0, j);
 
 				posBuffer = j;
 
-				currValue.startKey = 0;
+				currValue.setStartKey(0);
 				nextsplitValue = true;
 
 				try {
@@ -283,7 +282,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 				if (!nextsplitValue)
 					return false;
 
-				currValue.endKey = (j - 1);
+				currValue.setEndKey(j - 1);
 			}
 
 			/*
@@ -295,26 +294,26 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 
 				if (!nextsplitKey) {
 
-					currValue.buffer = borderBuffer;
+					currValue.setBuffer(borderBuffer);
 
-					int j = currValue.endKey + 1 - currValue.startKey;
-					System.arraycopy(myInputSplitBuffer, currValue.startKey, borderBuffer, 0, j);
+					int j = currValue.getEndKey() + 1 - currValue.getStartKey();
+					System.arraycopy(myInputSplitBuffer, currValue.getStartKey(), borderBuffer, 0, j);
 
-					currValue.startKey = 0;
-					currValue.endKey = (j - 1);
+					currValue.setStartKey(0);
+					currValue.setEndKey(j - 1);
 
-					int start = currValue.startValue;
-					currValue.startValue = j;
+					int start = currValue.getStartValue();
+					currValue.setStartValue(j);
 
-					if ((currValue.endValue + 1 - start) > 0) // TODO VERIFICARE
-						System.arraycopy(myInputSplitBuffer, start, borderBuffer, j, (currValue.endValue + 1 - start));
-					posBuffer = j + currValue.endValue + 1 - start;
+					if ((currValue.getEndValue() + 1 - start) > 0) // TODO VERIFICARE
+						System.arraycopy(myInputSplitBuffer, start, borderBuffer, j, (currValue.getEndValue() + 1 - start));
+					posBuffer = j + currValue.getEndValue() + 1 - start;
 
-					currValue.endValue = posBuffer;
+					currValue.setEndValue(posBuffer);
 
 				} else {
-					posBuffer = currValue.endKey + 1;
-					currValue.startValue = posBuffer;
+					posBuffer = currValue.getEndKey() + 1;
+					currValue.setStartValue(posBuffer);
 				}
 
 				byte b = 'a';
@@ -333,7 +332,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 				}
 
 				if (b == '>')
-					currValue.endValue = (posBuffer - 2);
+					currValue.setEndValue(posBuffer - 2);
 				else {
 
 					int c = 0;
@@ -346,7 +345,7 @@ public class ShortReadsRecordReader extends RecordReader<NullWritable, Record> {
 						c++;
 					}
 
-					currValue.endValue = (posBuffer - 1) - c;
+					currValue.setEndValue(posBuffer - 1 - c);
 
 				}
 
