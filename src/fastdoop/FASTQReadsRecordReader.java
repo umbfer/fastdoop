@@ -98,7 +98,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 		posBuffer = 0;
 		Configuration job = context.getConfiguration();
 		
-		int look_ahead_buffer_size = Integer.parseInt(context.getConfiguration().get("look_ahead_buffer_size", "4096"));
+		int look_ahead_buffer_size = context.getConfiguration().getInt("look_ahead_buffer_size", 4096);
 
 		/*
 		 * We open the file corresponding to the input split and

@@ -88,7 +88,7 @@ public class LongReadsRecordReader extends RecordReader<Text, PartialSequence> {
 		 * should be retrieved together with the bytes of the current
 		 * input split.  
 		 */
-		k = Integer.parseInt(context.getConfiguration().get("k", "10"));
+		k = context.getConfiguration().getInt("k", 10);
 
 		/*
 		 * We open the file corresponding to the input split and
@@ -174,7 +174,7 @@ public class LongReadsRecordReader extends RecordReader<Text, PartialSequence> {
 			int c = 0;
 
 			for (int i = sizeBuffer1 - 1; i >= 0; i--) {
-				if (((char) myInputSplitBuffer[i]) != '\n')
+				if (myInputSplitBuffer[i] != '\n')
 					break;
 
 				c++;

@@ -26,6 +26,8 @@ public class TestLongFastdoop {
 	
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
+		conf.setInt("k", 50);
+		
 		Job job = Job.getInstance(conf, "FASTdoop Test Long");
 		
 		String inputPath = "data/big.fasta";
@@ -69,6 +71,8 @@ public class TestShortFastdoop {
 	
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
+		conf.setInt("look_ahead_buffer_size", 4096);
+		
 		Job job = Job.getInstance(conf, "FASTdoop Test Short");
 		
 		String inputPath = "data/short.fasta";

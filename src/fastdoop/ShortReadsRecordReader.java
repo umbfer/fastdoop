@@ -104,7 +104,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 		posBuffer = 0;
 		Configuration job = context.getConfiguration();
 
-		int look_ahead_buffer_size = Integer.parseInt(context.getConfiguration().get("look_ahead_buffer_size", "2000"));
+		int look_ahead_buffer_size = context.getConfiguration().getInt("look_ahead_buffer_size", 2048);
 
 		/*
 		 * We open the file corresponding to the input split and
@@ -233,7 +233,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 				int c = 0;
 
 				for (int i = posBuffer - 1; i >= 0; i--) {
-					if (((char) myInputSplitBuffer[i]) != '\n')
+					if ( myInputSplitBuffer[i] != '\n')
 						break;
 
 					c++;
@@ -326,7 +326,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 
 					for (int i = posBuffer - 1; i >= 0; i--) {
 
-						if (((char) borderBuffer[i]) != '\n')
+						if (borderBuffer[i] != '\n')
 							break;
 
 						c++;
