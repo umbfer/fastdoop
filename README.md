@@ -7,9 +7,9 @@ FASTdoop is a generic Hadoop library for the management of FASTA and FASTQ files
 three input reader formats with associated record readers. These readers are optimized to
 read data efficiently from FASTA/FASTQ files in a variety of settings. They are:
 
-- FASTAshortInputFileFormat: optimized to read a collection of short sequences from a FASTA file.
-- FASTAlongInputFileFormat: optimized to read a very large sequence (even gigabytes long) from a FASTA file.
-- FASTQInputFileFormat: optimized to read a collection of short sequences from a FASTQ file.
+* FASTAshortInputFileFormat: optimized to read a collection of short sequences from a FASTA file.
+* FASTAlongInputFileFormat: optimized to read a very large sequence (even gigabytes long) from a FASTA file.
+* FASTQInputFileFormat: optimized to read a collection of short sequences from a FASTQ file.
 
 
 ### Using FASTdoop
@@ -122,8 +122,8 @@ starting from the source files. In this case, the building of FASTdoop would not
 as it can be managed using the provided Maven project. In this case, it is only required to clone the repository and load the project inside Eclipse or another IDE. Then, the FASTdoop jar could be created by issuing the Maven install procedure (w.g., clicking on the ```Run As > Maven install``` option if using Eclipse).
 
 The Maven dependecies are:
-- Apache Hadoop Common 2.7.0
-- Apache Hadoop MapReduce Core 2.7.0
+* Apache Hadoop Common 2.7.0
+* Apache Hadoop MapReduce Core 2.7.0
 
 The building process can also be issued via terminal, by moving in the FASTdoop main directory and running the following command-line:
 
@@ -171,6 +171,15 @@ Example 3:  Print on screen all the short sequences contained in fastdoop-1.0/da
 ```console
 java -cp FASTdoop-1.0.jar fastdoop.test.TestFQ data/short.fastq
 ```
+
+## Datasets
+
+The datasets used for our experiments can be downloaded from the following links: 
+
+* [Datasets used for testing FASTAlongInputFileFormat (about 12 GB)](https://goo.gl/PBACD2)
+* [Datasets used for testing FASTAshortInputFileFormat (about 8 GB)](https://goo.gl/34MYxI)
+* [Datasets used for testing FASTQInputFileFormat (about 10 GB)](https://goo.gl/ZmJs7A)
+
 
 ## Citation
 
