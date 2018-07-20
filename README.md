@@ -68,7 +68,7 @@ public class TestLongFastdoop {
 }
 ```
 
-Instead, this is an example where a file containing one short sequence encoded in FASTA format is loaded using the FASTdoop class _FASTAshortInputFileFormat_:
+Instead, this is an example where a file containing one or more short sequences encoded in FASTA format are loaded using the FASTdoop class _FASTAshortInputFileFormat_:
 
 ```java
 public class TestShortFastdoop {
@@ -113,7 +113,49 @@ public class TestShortFastdoop {
 	}
 }
 ```
+
+Finally, this is an example where a file containing one or more sequences encoded in FASTQ format are loaded using the FASTdoop class _FASTQInputFileFormat_:
+
+```java
+Configuration conf = new Configuration();
+		conf.setInt("look_ahead_buffer_size", 2048);
 		
+		Job job = Job.getInstance(conf, "FASTdoop Test FASTQ");
+		
+		String inputPath = "data/small.fastq";
+		FileInputFormat.addInputPath(job, new Path(inputPath));
+		FileOutputFormat.setOutputPath(job, new Path("output"));
+		
+		job.setJarByClass(TestFASTQFastdoop.class);
+		
+		job.setInputFormatClass(FASTQInputFileFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+		
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
+		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(QRecord.class);
+		
+		job.setMapperClass(MyMapper.class);
+		
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
+	}
+	
+	public static class MyMapper extends Mapper<Text, QRecord, Text, Text> {
+		
+		@Override
+		public void map(Text nullKey, QRecord sequence, Context context) throws IOException, InterruptedException {
+			// the standard output is written as log in: 
+			// $HADOOP_HOME/los/userlogs/application_<timestamp>_<id>/*/stdout
+			System.out.println("ID: " + sequence.getKey());
+			System.out.println("Sequence: " + sequence.getValue());
+		
+			context.write(new Text(sequence.getKey()), new Text(sequence.getValue()));
+		}
+	}
+```
+	
 Notice that ```FASTAshortInputFileFormat``` and ```FASTQInputFileFormat``` takes no parameters while 
 ```FASTAlongInputFileFormat``` allows the user to specify, when processing a split, how much
 characters of the following input split should be analyzed as well. This option has been 
