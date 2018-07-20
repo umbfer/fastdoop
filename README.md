@@ -122,8 +122,8 @@ starting from the source files. In this case, the building of FASTdoop would not
 as it can be managed using the provided Maven project. In this case, it is only required to clone the repository and load the project inside Eclipse or another IDE. Then, the FASTdoop jar could be created by issuing the Maven install procedure (w.g., clicking on the ```Run As > Maven install``` option if using Eclipse).
 
 The Maven dependecies are:
-* Apache Hadoop Common 2.7.0
-* Apache Hadoop MapReduce Core 2.7.0
+* [Apache Hadoop Common 2.7.0](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common/2.7.0)
+* [Apache Hadoop MapReduce Core 2.7.0](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core/2.7.0)
 
 The building process can also be issued via terminal, by moving in the FASTdoop main directory and running the following command-line:
 
