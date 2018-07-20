@@ -7,9 +7,9 @@ FASTdoop is a generic Hadoop library for the management of FASTA and FASTQ files
 three input reader formats with associated record readers. These readers are optimized to
 read data efficiently from FASTA/FASTQ files in a variety of settings. They are:
 
-* FASTAshortInputFileFormat: optimized to read a collection of short sequences from a FASTA file.
-* FASTAlongInputFileFormat: optimized to read a very large sequence (even gigabytes long) from a FASTA file.
-* FASTQInputFileFormat: optimized to read a collection of short sequences from a FASTQ file.
+* _FASTAshortInputFileFormat_: optimized to read a collection of short sequences from a FASTA file.
+* _FASTAlongInputFileFormat_: optimized to read a very large sequence (even gigabytes long) from a FASTA file.
+* _FASTQInputFileFormat_: optimized to read a collection of short sequences from a FASTQ file.
 
 
 ### Using FASTdoop
@@ -18,6 +18,10 @@ As a preliminary step, in order to use FASTdoop in an Hadoop application, the FA
 file must be included in the classpath of the virtual machines used to run that application. 
 Then, it is possible to use one of the readers coming with FASTdoop by running the standard
 setInputFormatClass method.
+
+It is possible to modify some configuration parameters to optimize the execution. This can be done using the class _Configuration_ present in Apache Hadoop. The parameters configurable are the following:
+* _k_: determines how many bytes of the next input split (if any) should be retrieved together with the bytes of the current input split. It is useful for computing the k-mers. The parameter _k_ is used inside the class _LongReadsRecordReader_.
+* _look_ahead_buffer_size_: is the size of the auxiliary buffer. The buffer is used when the record to read isn't entirely contained inside a unique input split. The parameter _look_ahead_buffer_size_ is used inside the classes _FASTQReadsRecordReader_ and _ShortReadsRecordReader_.
 
 This is an example where a file containing one long sequence encoded in FASTA format is loaded using the FASTdoop class _FASTAlongInputFileFormat_:
 
