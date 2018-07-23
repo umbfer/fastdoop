@@ -19,11 +19,15 @@ file must be included in the classpath of the virtual machines used to run that 
 Then, it is possible to use one of the readers coming with FASTdoop by running the standard
 setInputFormatClass method.
 
-It is possible to modify some configuration parameters to optimize the execution. This can be done using the class _Configuration_ present in Apache Hadoop. The parameters configurable are the following:
-* _k_: determines how many bytes of the next input split (if any) should be retrieved together with the bytes of the current input split. It is useful for computing the k-mers. The parameter _k_ is used inside the class _LongReadsRecordReader_.
-* _look_ahead_buffer_size_: is the size of the auxiliary buffer. The buffer is used when the record to read isn't entirely contained inside a unique input split. The parameter _look_ahead_buffer_size_ is used inside the classes _FASTQReadsRecordReader_ and _ShortReadsRecordReader_.
+The HDFS file systems splits large files in smaller blocks of fixed size (default: 128M) called input splits. This may cause problems when parsing large FAST/FASTA/FASTQ files as a sequence may cross two or more blocks. By default, FASTdoop requires that the worker owning the input split containing the beginning of a sequence is in charge of retrieving that entire sequence. This could require that worker to ask the  worker owning the next input split for the bytes that are needed to complete that sequence, according to a user-defined look ahead buffer. (Notice that FASTdoop does not currently allow to read an entire sequence in one single record if this spans more than two blocks) Instead, if a worker owns a split containing the ending part of a sequence starting elsewhere, this part is ignored by the worker when looking for sequences to read. 
 
-This is an example where a file containing one long sequence encoded in FASTA format is loaded using the FASTdoop class _FASTAlongInputFileFormat_:
+When dealing with very long sequences (e.g., assembled genomes) there may be need of having different workers process different blocks of the same input file. In such a case, it may be required for a worker to have along with its input splits, also a certain number of the bytes available in the initial part of the following input splits (e.g., when doing k-mers counting, if the last character of an input split belongs to a sequence, it has to be processed together with the first k-1 characters of the following input split).
+
+It is possible to alter the behavior of FASTdoop in these cases by modifying the following configuration parameters using the _Configuration_ class available in Apache Hadoop. 
+* _k_: determines how many bytes from the initial part of the next input split (if any) should be retrieved together with the bytes of the current input split (if any) when reading a sequence not ending before the end of the split. (This parameter is available for only the _LongReadsRecordReader_ class).
+* _look_ahead_buffer_size_: is the number of bytes coming from the initial part of the next input split and used (eventually( to complete a sequence being read in the current split. It cannot be longer than the size of the input split. (This parameter is available for the _FASTQReadsRecordReader_ and _ShortReadsRecordReader_ classes).
+
+This is an example where a file containing one long sequence encoded in FASTA format is loaded using the _FASTAlongInputFileFormat_ FASTdoop class:
 
 ```java
 public class TestLongFastdoop {
@@ -68,7 +72,7 @@ public class TestLongFastdoop {
 }
 ```
 
-Instead, this is an example where a file containing one or more short sequences encoded in FASTA format are loaded using the FASTdoop class _FASTAshortInputFileFormat_:
+Instead, this is an example where a file containing one or more short sequences encoded in FASTA format are loaded using the _FASTAshortInputFileFormat_ FASTdoop class:
 
 ```java
 public class TestShortFastdoop {
@@ -114,7 +118,7 @@ public class TestShortFastdoop {
 }
 ```
 
-Finally, this is an example where a file containing one or more sequences encoded in FASTQ format are loaded using the FASTdoop class _FASTQInputFileFormat_:
+Finally, this is an example where a file containing one or more sequences encoded in FASTQ format are loaded using the _FASTQInputFileFormat_ FASTdoop class:
 
 ```java
 Configuration conf = new Configuration();
@@ -156,12 +160,7 @@ Configuration conf = new Configuration();
 	}
 ```
 	
-Notice that ```FASTAshortInputFileFormat``` and ```FASTQInputFileFormat``` takes no parameters while 
-```FASTAlongInputFileFormat``` allows the user to specify, when processing a split, how much
-characters of the following input split should be analyzed as well. This option has been 
-added to handle cases like k-mer counting where a sequence of characters may begin in a
-split and end in the following one. A usage example of the three readers is provided in
-the directory src/fastoop/test.
+A usage example of the three readers is provided in the directory src/fastoop/test.
 
 
 ### Building FASTdoop
