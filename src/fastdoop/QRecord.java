@@ -57,7 +57,7 @@ public class QRecord implements Serializable {
 	@Override
 	public String toString() {
 
-		return "@" + this.getKey() + "\n" + this.getValue() + "\n+" + this.getKey2() + "\n" + this.getQuality() + "\n";
+		return "@" + this.getKey() + "\n" + this.getValue() + "\n+" + this.getKey2() + "\n" + this.getQuality();
 
 	}
 
