@@ -114,7 +114,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 		Path path = split.getPath();
 		startByte = split.getStart();
 		inputFile = path.getFileSystem(job).open(path);
-		inputFile.seek(startByte);
+		Utils.safeSeek(inputFile, startByte);
 
 		currKey = new Text("null");
 		currValue = new Record();
@@ -131,7 +131,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 		borderBuffer = new byte[look_ahead_buffer_size];
 
 		sizeBuffer = inputFile.read(startByte, myInputSplitBuffer, 0, myInputSplitBuffer.length);
-		inputFile.seek(startByte + sizeBuffer);
+		Utils.safeSeek(inputFile, startByte + sizeBuffer);
 
 		if (sizeBuffer <= 0) {
 			endMyInputSplit = true;
