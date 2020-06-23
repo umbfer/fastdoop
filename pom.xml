@@ -32,5 +32,9 @@
 	
 
   </dependencies>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+    </build>
   <description>FASTdoop is a generic Apache Hadoop library for the management of FASTA and FASTQ files. It includes three input reader formats with associated record readers. These readers are optimized to read data efficiently from FASTA/FASTQ files in a variety of settings. Currently, FASTdoop supports FASTA files containing one or more short sequences (i.e., few hundreds of characters each) or a single very large sequence of arbitrary length (e.g. millions or billions of characters). Moreover, it allows to parse the content of FASTQ files containing short sequences. </description>
 </project>
