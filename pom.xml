@@ -1,36 +1,50 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <groupId>it.uniroma1.dss</groupId>
-  <artifactId>fastdoop</artifactId>
-  <version>1.0.0</version>
-  <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
 
-  <name>fastdoop</name>
-  <url>http://www.di-srv.unisa.it/FASTdoop/</url>
+    <groupId>it.uniroma1.dss</groupId>
+    <artifactId>fastdoop</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <name>fastdoop</name>
+    <url>http://www.di-srv.unisa.it/FASTdoop/</url>
 
-  <dependencies>
-    
-    <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
-	<dependency>
-	    <groupId>org.apache.hadoop</groupId>
-	    <artifactId>hadoop-common</artifactId>
-	    <version>2.7.0</version>
-	</dependency>
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-	<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core -->
-	<dependency>
-	    <groupId>org.apache.hadoop</groupId>
-	    <artifactId>hadoop-mapreduce-client-core</artifactId>
-	    <version>2.7.0</version>
-	</dependency>
-	
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+    </build>
 
-  </dependencies>
-  <description>FASTdoop is a generic Apache Hadoop library for the management of FASTA and FASTQ files. It includes three input reader formats with associated record readers. These readers are optimized to read data efficiently from FASTA/FASTQ files in a variety of settings. Currently, FASTdoop supports FASTA files containing one or more short sequences (i.e., few hundreds of characters each) or a single very large sequence of arbitrary length (e.g. millions or billions of characters). Moreover, it allows to parse the content of FASTQ files containing short sequences. </description>
+    <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-core</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <description>FASTdoop is a generic Apache Hadoop library for the management of FASTA and FASTQ files. It includes
+        three input reader formats with associated record readers. These readers are optimized to read data efficiently
+        from FASTA/FASTQ files in a variety of settings. Currently, FASTdoop supports FASTA files containing one or more
+        short sequences (i.e., few hundreds of characters each) or a single very large sequence of arbitrary length
+        (e.g. millions or billions of characters). Moreover, it allows to parse the content of FASTQ files containing
+        short sequences.
+    </description>
+
 </project>
