@@ -195,8 +195,11 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 			 * Assuming there are more characters from the current split to
 			 * process, we move forward the pointer
 			 * until the symbol '>' is found
+			 *
+			 * posBuffer + 1 can potentially overrun the end of the buffer, since the exception above
+			 * would not be thrown if the final character of the split is a \n. Check the offset accordingly.
 			 */
-			currValue.setStartValue(posBuffer + 1);
+			currValue.setStartValue(Utils.trimToEnd(myInputSplitBuffer, posBuffer + 1));
 
 			try {
 				while (myInputSplitBuffer[posBuffer] != '>') {
