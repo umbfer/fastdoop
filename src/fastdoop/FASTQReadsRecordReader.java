@@ -212,9 +212,11 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 			 * Assuming there are more characters from the current split to
 			 * process, we move forward the pointer
 			 * until the symbol '+' is found
+			 *
+			 * posBuffer + 1 can potentially overrun the buffer end, since the exception above is not thrown
+			 * if the final character of the split is a \n. Check the offset accordingly.
 			 */
-
-			currRecord.setStartValue(posBuffer + 1);
+			currRecord.setStartValue(Utils.trimToEnd(myInputSplitBuffer, posBuffer + 1));
 
 			try {
 				posBuffer = posBuffer + 2;
@@ -261,7 +263,9 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 
 		if (!endMyInputSplit) {
 
-			currRecord.setStartKey2(posBuffer);
+			//The exception above would not be thrown if the final character of the split is a +.
+			//Check the offset accordingly.
+			currRecord.setStartKey2(Utils.trimToEnd(myInputSplitBuffer, posBuffer));
 
 			try {
 
@@ -291,7 +295,9 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 
 				if (!endMyInputSplit) {
 
-					currRecord.setStartQuality(posBuffer + 1);
+					//The exception above would not be thrown if the final character of the split is a newline.
+					//Check the offset accordingly.
+					currRecord.setStartQuality(Utils.trimToEnd(myInputSplitBuffer, posBuffer + 1));
 					currRecord.setEndQuality(currRecord.getStartQuality() + currRecord.getEndValue() - currRecord.getStartValue());
 					posBuffer = (currRecord.getEndQuality() + 3);
 

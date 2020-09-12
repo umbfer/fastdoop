@@ -41,4 +41,14 @@ class Utils {
             }
         }
     }
+
+    /**
+     * Adjust an offset into a buffer such that the offset does not overrun the buffer end.
+     * @param buffer
+     * @param offset
+     * @return
+     */
+    public static int trimToEnd(byte[] buffer, int offset) {
+        return (offset <= buffer.length - 1) ? offset : (buffer.length - 1);
+    }
 }
