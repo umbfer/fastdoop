@@ -67,7 +67,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 
 	private Text currKey;
 
-	private Record currValue;
+	private Record currRecord;
 
 	/*
 	 * Used to buffer the content of the input split
@@ -120,7 +120,9 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 		Utils.safeSeek(inputFile, startByte);
 
 		currKey = new Text("null");
-		currValue = new Record();
+		currRecord = new Record();
+		currRecord.setStartSplit(split.getStart());
+		currRecord.setFileName(split.getPath().getName());
 
 		/*
 		 * We read the whole content of the split in memory using
@@ -129,7 +131,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 		 */
 
 		myInputSplitBuffer = new byte[(int) split.getLength()];
-		currValue.setBuffer(myInputSplitBuffer);
+		currRecord.setBuffer(myInputSplitBuffer);
 
 		borderBuffer = new byte[look_ahead_buffer_size];
 
@@ -171,7 +173,8 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 		boolean nextsplitKey = false;
 		boolean nextsplitValue = false;
 
-		currValue.setStartKey(posBuffer);
+		currRecord.setStartKey(posBuffer);
+		currRecord.setSplitOffset(posBuffer);
 
 		/*
 		 * We look for the next short sequence my moving posBuffer until a
@@ -194,7 +197,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 			nextsplitKey = true;
 		}
 
-		currValue.setEndKey(posBuffer - 1);
+		currRecord.setEndKey(posBuffer - 1);
 
 		if (!endMyInputSplit) {
 			/*
@@ -205,14 +208,14 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 			 * posBuffer + 1 can potentially overrun the end of the buffer, since the exception above
 			 * would not be thrown if the final character of the split is a \n. Check the offset accordingly.
 			 */
-			currValue.setStartValue(Utils.trimToEnd(myInputSplitBuffer, posBuffer + 1));
+			currRecord.setStartValue(Utils.trimToEnd(myInputSplitBuffer, posBuffer + 1));
 
 			try {
 				while (myInputSplitBuffer[posBuffer] != '>') {
 					posBuffer++;
 				}
 
-				currValue.setEndValue(posBuffer - 2);
+				currRecord.setEndValue(posBuffer - 2);
 				posBuffer++;
 
 			} catch (ArrayIndexOutOfBoundsException e) {
@@ -223,7 +226,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 				 */
 				endMyInputSplit = true;
 				nextsplitValue = true;
-				currValue.setEndValue(posBuffer - 1);
+				currRecord.setEndValue(posBuffer - 1);
 
 			}
 
@@ -248,7 +251,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 					c++;
 				}
 
-				currValue.setEndValue(posBuffer - 1 - c);
+				currRecord.setEndValue(posBuffer - 1 - c);
 
 				return true;
 			}
@@ -261,15 +264,15 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 			 */
 			if (nextsplitKey) {
 
-				currValue.setBuffer(borderBuffer);
+				currRecord.setBuffer(borderBuffer);
 
-				int j = posBuffer - currValue.getStartKey();
+				int j = posBuffer - currRecord.getStartKey();
 
-				System.arraycopy(myInputSplitBuffer, currValue.getStartKey(), borderBuffer, 0, j);
+				arraycopy_expand(currRecord.getStartKey(), 0, j);		
 
 				posBuffer = j;
 
-				currValue.setStartKey(0);
+				currRecord.setStartKey(0);
 				nextsplitValue = true;
 
 				byte b;
@@ -284,7 +287,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 				if (!nextsplitValue)
 					return false;
 
-				currValue.setEndKey(j - 1);
+				currRecord.setEndKey(j - 1);
 			}
 
 			/*
@@ -296,26 +299,25 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 
 				if (!nextsplitKey) {
 
-					currValue.setBuffer(borderBuffer);
+					currRecord.setBuffer(borderBuffer);
 
-					int j = currValue.getEndKey() + 1 - currValue.getStartKey();
-					System.arraycopy(myInputSplitBuffer, currValue.getStartKey(), borderBuffer, 0, j);
+					int j = currRecord.getEndKey() + 1 - currRecord.getStartKey();
+					arraycopy_expand(currRecord.getStartKey(), 0, j);
 
-					currValue.setStartKey(0);
-					currValue.setEndKey(j - 1);
+					currRecord.setStartKey(0);
+					currRecord.setEndKey(j - 1);
 
-					int start = currValue.getStartValue();
-					currValue.setStartValue(j);
+					int start = currRecord.getStartValue();
+					currRecord.setStartValue(j);
 
-					if ((currValue.getEndValue() + 1 - start) > 0) // TODO VERIFICARE
-						System.arraycopy(myInputSplitBuffer, start, borderBuffer, j, (currValue.getEndValue() + 1 - start));
-					posBuffer = j + currValue.getEndValue() + 1 - start;
+					arraycopy_expand(start, j, (currRecord.getEndValue() + 1 - start));
+					posBuffer = j + currRecord.getEndValue() + 1 - start;
 
-					currValue.setEndValue(posBuffer);
+					currRecord.setEndValue(posBuffer);
 
 				} else {
-					posBuffer = currValue.getEndKey() + 1;
-					currValue.setStartValue(posBuffer);
+					posBuffer = currRecord.getEndKey() + 1;
+					currRecord.setStartValue(posBuffer);
 				}
 
 				byte b = 'a';
@@ -328,7 +330,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 				} catch (EOFException e) {}
 
 				if (b == '>')
-					currValue.setEndValue(posBuffer - 2);
+					currRecord.setEndValue(posBuffer - 2);
 				else {
 
 					int c = 0;
@@ -341,7 +343,7 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 						c++;
 					}
 
-					currValue.setEndValue(posBuffer - 1 - c);
+					currRecord.setEndValue(posBuffer - 1 - c);
 
 				}
 
@@ -371,7 +373,19 @@ public class ShortReadsRecordReader extends RecordReader<Text, Record> {
 
 	@Override
 	public Record getCurrentValue() throws IOException, InterruptedException {
-		return currValue;
+		return currRecord;
 	}
 
+	private void arraycopy_expand(int srcPos, int destPos, int length) {
+		try {
+			System.arraycopy(myInputSplitBuffer, srcPos, borderBuffer, destPos, length); 
+		} catch (ArrayIndexOutOfBoundsException e) {
+			byte newBorderbuffer[] = new byte[destPos + length];
+			System.arraycopy(borderBuffer, 0, newBorderbuffer, 0, borderBuffer.length);
+			borderBuffer = newBorderbuffer;
+			currRecord.setBuffer(newBorderbuffer);
+	    
+			System.arraycopy(myInputSplitBuffer, srcPos, borderBuffer, destPos, length); 
+		}
+	}
 }

@@ -22,7 +22,6 @@
     </build>
 
     <dependencies>
-
         <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -37,9 +36,23 @@
             <version>2.7.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>2.3.0</version>
+        </dependency>
     </dependencies>
 
-    <description>FASTdoop is a generic Apache Hadoop library for the management of FASTA and FASTQ files. It includes
+    <description>
+        FASTdoop is a generic Apache Hadoop library for the management of FASTA and FASTQ files. It includes
         three input reader formats with associated record readers. These readers are optimized to read data efficiently
         from FASTA/FASTQ files in a variety of settings. Currently, FASTdoop supports FASTA files containing one or more
         short sequences (i.e., few hundreds of characters each) or a single very large sequence of arbitrary length

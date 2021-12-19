@@ -18,8 +18,6 @@
 
 package fastdoop;
 
-import java.io.Serializable;
-
 /**
  * This class is used to store fragments of a long input FASTA 
  * sequence as an array of bytes.
@@ -28,52 +26,33 @@ import java.io.Serializable;
  * 
  * @version 1.0  
  */
-public class PartialSequence implements Serializable { 
+public class PartialSequence extends Record { 
 	 
 	private static final long serialVersionUID = 6820343484812253133L; 
 
 	private String header;
-	private byte[] buffer;
-	private int startValue; 
-	private int endValue; 
 	private int bytesToProcess;
 
+	@Override
 	public String getKey(){
 		return header;
 	}
 	
-	public String getValue(){
-		return new String(buffer, startValue, (endValue-startValue+1));
-	}
-	
 	public String getValue2(){
-		return new String(buffer, startValue, bytesToProcess);
+		return new String(getBuffer(), getStartValue(), bytesToProcess);
 	}
 	
 	public String toString2() {
-		
-		if(startValue > 0)
-			return ">" + this.getKey() + "\n" + this.getValue2();
-		else
-			return this.getValue2();
-
+		return getStartValue() > 0 ? ">" + getKey() + "\n" + getValue2() : getValue2();
 	}
 
 	@Override
 	public String toString() {
 		return "PartialSequence [header=" + header + 
-				", bufferSize=" + (endValue - startValue + 1) +
-				", startValue=" + startValue + 
-				", endValue=" + endValue + 
+				", bufferSize=" + getValueLength() +
+				", startValue=" + getStartValue() + 
+				", endValue=" + getEndValue() + 
 				", bytesToProcess=" + bytesToProcess + "]";
-	}
-
-	public byte[] getBuffer() {
-		return buffer;
-	}
-
-	public void setBuffer(byte[] buffer) {
-		this.buffer = buffer;
 	}
 
 	public int getBytesToProcess() {
@@ -91,22 +70,4 @@ public class PartialSequence implements Serializable {
 	public void setHeader(String header) {
 		this.header = header;
 	}
-
-	public int getStartValue() {
-		return startValue;
-	}
-
-	public void setStartValue(int startValue) {
-		this.startValue = startValue;
-	}
-
-	public int getEndValue() {
-		return endValue;
-	}
-
-	public void setEndValue(int endValue) {
-		this.endValue = endValue;
-	}
-
-	
 }

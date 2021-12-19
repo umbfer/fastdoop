@@ -115,6 +115,8 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 
 		currKey = new Text("null");
 		currRecord = new QRecord();
+		currRecord.setStartSplit(split.getStart());
+		currRecord.setFileName(split.getPath().getName());
 
 		/*
 		 * We read the whole content of the split in memory using
@@ -184,6 +186,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 		boolean nextsplitSecondHeader = false;
 
 		currRecord.setStartKey(posBuffer);
+		currRecord.setSplitOffset(posBuffer);
 
 		/*
 		 * We look for the next short sequence my moving posBuffer until a
@@ -346,7 +349,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 			if (nextsplitKey) {
 				currRecord.setBuffer(borderBuffer);
 				int j = posBuffer - currRecord.getStartKey();
-				System.arraycopy(myInputSplitBuffer, currRecord.getStartKey(), borderBuffer, 0, j);
+				arraycopy_expand(currRecord.getStartKey(), 0, j);
 
 				posBuffer = j;
 
@@ -384,7 +387,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 					currRecord.setBuffer(borderBuffer);
 
 					int j = currRecord.getEndKey() + 1 - currRecord.getStartKey();
-					System.arraycopy(myInputSplitBuffer, currRecord.getStartKey(), borderBuffer, 0, j);
+					arraycopy_expand(currRecord.getStartKey(), 0, j);
 
 					currRecord.setStartKey(0);
 					currRecord.setEndKey(j - 1);
@@ -393,7 +396,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 					currRecord.setStartValue(j);
 
 					if ((currRecord.getEndValue() + 1 - start) > 0)
-						System.arraycopy(myInputSplitBuffer, start, borderBuffer, j, (currRecord.getEndValue() + 1 - start));
+						arraycopy_expand(start, j, (currRecord.getEndValue() + 1 - start));
 
 					if ((currRecord.getEndValue() - start) < 0) {
 						posBuffer = j;
@@ -455,14 +458,14 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 
 				// copy key
 				int j = currRecord.getEndKey() + 1 - currRecord.getStartKey();
-				System.arraycopy(myInputSplitBuffer, currRecord.getStartKey(), borderBuffer, 0, j);
+				arraycopy_expand(currRecord.getStartKey(), 0, j);
 
 				currRecord.setStartKey(0);
 				currRecord.setEndKey(j - 1);
 
 				// copy value
 				int v = currRecord.getEndValue() + 1 - currRecord.getStartValue();
-				System.arraycopy(myInputSplitBuffer, currRecord.getStartValue(), borderBuffer, j, v);
+				arraycopy_expand(currRecord.getStartValue(), j, (currRecord.getEndValue() + 1 - currRecord.getStartValue()));
 
 				currRecord.setStartValue(j);
 				currRecord.setEndValue(j + v - 1);
@@ -475,8 +478,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 					posBuffer = currRecord.getStartKey2();
 
 					if ((currRecord.getEndKey2() + 1 - start) > 0)
-						System.arraycopy(myInputSplitBuffer, start, borderBuffer, currRecord.getStartKey2(),
-								(currRecord.getEndKey2() + 1 - start));
+						arraycopy_expand(start, currRecord.getStartKey2(), (currRecord.getEndKey2() + 1 - start));
 
 					posBuffer = currRecord.getStartKey2() + (currRecord.getEndKey2() - start);
 
@@ -493,8 +495,8 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 				} else {
 
 					int s = currRecord.getEndKey2() + 1 - currRecord.getStartKey2();
-					System.arraycopy(myInputSplitBuffer, currRecord.getStartKey2(), borderBuffer, currRecord.getEndValue() + 1,
-							s);
+					
+					arraycopy_expand(currRecord.getStartKey2(), currRecord.getEndValue() + 1, s);
 					currRecord.setStartKey2(currRecord.getEndValue() + 1);
 					currRecord.setEndKey2(currRecord.getStartKey2() + s - 1);
 
@@ -503,8 +505,7 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 					posBuffer = currRecord.getStartQuality();
 
 					if ((currRecord.getEndQuality() + 1 - start) > 0)
-						System.arraycopy(myInputSplitBuffer, start, borderBuffer, currRecord.getStartQuality(),
-								(currRecord.getEndQuality() + 1 - start));
+						arraycopy_expand(start, currRecord.getStartQuality(), (currRecord.getEndQuality() + 1 - start));
 
 					posBuffer = currRecord.getStartQuality() + (currRecord.getEndQuality() - start);
 
@@ -552,4 +553,16 @@ public class FASTQReadsRecordReader extends RecordReader<Text, QRecord> {
 
 	}
 
+	private void arraycopy_expand(int srcPos, int destPos, int length) {
+		try {
+			System.arraycopy(myInputSplitBuffer, srcPos, borderBuffer, destPos, length); 
+		} catch (ArrayIndexOutOfBoundsException e) {
+			byte newBorderbuffer[] = new byte[destPos + length];
+			System.arraycopy(borderBuffer, 0, newBorderbuffer, 0, borderBuffer.length);
+			borderBuffer = newBorderbuffer;
+			currRecord.setBuffer(newBorderbuffer);
+	    
+			System.arraycopy(myInputSplitBuffer, srcPos, borderBuffer, destPos, length); 
+		}
+	}
 }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/fastdoop.iml" filepath="$PROJECT_DIR$/.idea/fastdoop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fastdoop.iml" filepath="$PROJECT_DIR$/fastdoop.iml" />
     </modules>
   </component>
 </project>

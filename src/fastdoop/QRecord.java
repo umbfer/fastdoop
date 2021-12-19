@@ -17,9 +17,6 @@
  */
 
 package fastdoop;
-
-import java.io.Serializable;
-
 /**
  * Utility class used to represent as a record a sequence existing 
  * in a FASTQ file.
@@ -28,77 +25,24 @@ import java.io.Serializable;
  * 
  * @version 1.0
  */
-public class QRecord implements Serializable { 
+public class QRecord extends Record { 
 	 
 	private static final long serialVersionUID = -7555239567456193078L; 
 
-	private byte[] buffer;
-	private int startKey, endKey;
-	private int startValue, endValue;
 	private int startKey2, endKey2;
 	private int startQuality, endQuality;
 
-	public String getKey() {
-		return new String(buffer, startKey, (endKey - startKey + 1));
+	public String getKey2() { 
+		return new String(getBuffer(), startKey2, getKey2Length()); 
 	}
 
-	public String getValue() {
-		return new String(buffer, startValue, (endValue - startValue + 1));
-	}
-
-	public String getKey2() {
-		return new String(buffer, startKey2, (endKey2 - startKey2 + 1));
-	}
-
-	public String getQuality() {
-		return new String(buffer, startQuality, (endQuality - startQuality + 1));
+	public String getQuality() { 
+		return new String(getBuffer(), startQuality, getQualityLength()); 
 	}
 
 	@Override
 	public String toString() {
-
-		return "@" + this.getKey() + "\n" + this.getValue() + "\n+" + this.getKey2() + "\n" + this.getQuality();
-
-	}
-
-	public byte[] getBuffer() {
-		return buffer;
-	}
-
-	public int getStartValue() {
-		return startValue;
-	}
-
-	public int getEndValue() {
-		return endValue;
-	}
-
-	public void setBuffer(byte[] buffer) {
-		this.buffer = buffer;
-	}
-
-	public int getStartKey() {
-		return startKey;
-	}
-
-	public void setStartKey(int startKey) {
-		this.startKey = startKey;
-	}
-
-	public int getEndKey() {
-		return endKey;
-	}
-
-	public void setEndKey(int endKey) {
-		this.endKey = endKey;
-	}
-
-	public void setStartValue(int startValue) {
-		this.startValue = startValue;
-	}
-
-	public void setEndValue(int endValue) {
-		this.endValue = endValue;
+		return "@" + getKey() + "\n" + getValue() + "\n+" + getKey2() + "\n" + getQuality();
 	}
 
 	public int getStartKey2() {
@@ -133,4 +77,11 @@ public class QRecord implements Serializable {
 		this.endQuality = endQuality;
 	}
 
+	public int getKey2Length() {
+		return endKey2 - startKey2 + 1;
+	}
+
+	public int getQualityLength() {
+		return endQuality - startQuality + 1;
+	}
 }

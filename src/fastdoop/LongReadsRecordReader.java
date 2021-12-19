@@ -101,6 +101,9 @@ public class LongReadsRecordReader extends RecordReader<Text, PartialSequence> {
 
 		currKey = new Text("null");
 		currValue = new PartialSequence();
+		currValue.setStartSplit(split.getStart());
+		currValue.setFileName(split.getPath().getName());
+		currValue.setSplitOffset(startByte);
 
 		/*
 		 * We read the whole content of the split in memory using

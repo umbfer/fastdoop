@@ -11,25 +11,100 @@ read data efficiently from FASTA/FASTQ files in a variety of settings. They are:
 * _FASTAlongInputFileFormat_: optimized to read a very large sequence (even gigabytes long) from a FASTA file.
 * _FASTQInputFileFormat_: optimized to read a collection of short sequences from a FASTQ file.
 
+### Using FASTdoop on Spark
 
-### Using FASTdoop
+Starting from version X, FASTdoop can be used also on _Spark_. This can be achieved using the _newAPIHadoopFile_ method of the _JavaSparkContext_ class. This method returns a new RDD whose content is loaded from an input specified file or collection of files. It requires the specification of the input path, of the class to be used for handling that particular _InputFileFormat_, of the class used to represent the key of the new RDD, of the class used to represent the value of the new RDD and of a _Configuration_ object.
+
+This is an example where a file containing one long sequence encoded in FASTA format is loaded using the FASTdoop class _FASTAlongInputFileFormat_:
+
+```java
+SparkSession spark = SparkSession.builder().master("local[*]").appName("FASTdoop Test Long").getOrCreate();	
+SparkContext sc = spark.sparkContext();
+JavaSparkContext jsc = new JavaSparkContext(sc);
+
+Configuration inputConf = jsc.hadoopConfiguration();
+inputConf.setInt("k", 50);
+
+String inputPath = "data/big.fasta";
+
+JavaPairRDD<Text, PartialSequence> dSequences2 = jsc.newAPIHadoopFile(inputPath, 
+		FASTAlongInputFileFormat.class, Text.class, PartialSequence.class, inputConf);
+
+/* We drop the keys of the new RDD since they are not used, than a PairRDD (ID, sequence) is created */
+JavaPairRDD<String, String> dSequences = dSequences2.values().mapToPair(record -> new Tuple2<>(record.getKey(), record.getValue()));
+
+for (Tuple2<String, String> id_sequence : dSequences.collect()) {
+	System.out.println("ID: " + id_sequence._1);
+	System.out.println("Sequence: " + id_sequence._2);
+}
+```
+
+Instead, this is an example where a file containing one or more short sequences encoded in FASTA format are loaded using the FASTdoop class _FASTAshortInputFileFormat_:
+
+```java
+SparkSession spark = SparkSession.builder().master("local[*]").appName("FASTdoop Test Short").getOrCreate();	
+SparkContext sc = spark.sparkContext();
+JavaSparkContext jsc = new JavaSparkContext(sc);
+
+Configuration inputConf = jsc.hadoopConfiguration();
+inputConf.setInt("look_ahead_buffer_size", 4096);
+
+String inputPath = "data/short.fasta";
+
+JavaPairRDD<Text, Record> dSequences2 = jsc.newAPIHadoopFile(inputPath, 
+		FASTAshortInputFileFormat.class, Text.class, Record.class, inputConf);
+	
+/* We drop the keys of the new RDD since they are not used, than a PairRDD (ID, sequence) is created */
+JavaPairRDD<String, String> dSequences = dSequences2.values().mapToPair(record -> new Tuple2<>(record.getKey(), record.getValue()));
+
+for (Tuple2<String, String> id_sequence : dSequences.collect()) {
+	System.out.println("ID: " + id_sequence._1);
+	System.out.println("Sequence: " + id_sequence._2);
+}
+```
+
+Finally, this is an example where a file containing one or more sequences encoded in FASTQ format are loaded using the FASTdoop class _FASTQInputFileFormat_:
+
+```java
+SparkSession spark = SparkSession.builder().master("local[*]").appName("FASTdoop Test FASTQ").getOrCreate();	
+SparkContext sc = spark.sparkContext();
+JavaSparkContext jsc = new JavaSparkContext(sc);
+
+Configuration inputConf = jsc.hadoopConfiguration();
+inputConf.setInt("look_ahead_buffer_size", 2048);
+
+String inputPath = "data/small.fastq";
+
+JavaPairRDD<Text, QRecord> dSequences2 = jsc.newAPIHadoopFile(inputPath, 
+		FASTQInputFileFormat.class, Text.class, QRecord.class, inputConf);
+
+/* We drop the keys of the new RDD since they are not used, than a PairRDD (ID, sequence) is created */
+JavaPairRDD<String, String> dSequences = dSequences2.values().mapToPair(record -> new Tuple2<>(record.getKey(), record.getValue()));
+
+for (Tuple2<String, String> id_sequence : dSequences.collect()) {
+	System.out.println("ID: " + id_sequence._1);
+	System.out.println("Sequence: " + id_sequence._2);
+}
+```
+
+### Using FASTdoop on Hadoop
 
 As a preliminary step, in order to use FASTdoop in an Hadoop application, the FASTdoop jar
-file must be included in the classpath of the virtual machines used to run that application. 
+file must be included in the classpath of the virtual machines used to run that application.
 Then, it is possible to use one of the readers coming with FASTdoop by running the standard
 setInputFormatClass method.
 
 There are three readers available with FASTdoop:
 
-* _FASTAshortInputFileFormat_: it allows to read a collection of short sequences from a FASTA file. Each sequence is loaded in its entirety and returned as an istance of the _Record_ class. It assumes that each sequence is entirely contained in an input split or it may occupy two input splits, with the second part being smaller than a user-defined size (see in the following part). 
+* _FASTAshortInputFileFormat_: it allows to read a collection of short sequences from a FASTA file. Each sequence is loaded in its entirety and returned as an istance of the _Record_ class. It assumes that each sequence is entirely contained in an input split or it may occupy two input splits, with the second part being smaller than a user-defined size (see in the following part).
 * _FASTAlongInputFileFormat_: it allows to read, in chunks, a very large sequence (even gigabytes long) from a FASTA file. Each attempt to read the content of an input split, will return the part of sequence existing in that input split, as an instance of the _PartialSequence_ class plus some more bytes from the following input split (see in the following part).
-* _FASTQInputFileFormat_: it allows to read a collection of short sequences from a FASTQ file. Each sequence is loaded in its entirety and returned as an istance of the _QRecord_ class. It assumes that each sequence is entirely contained in an input split or it may occupy two input splits, with the second part being smaller than a user-defined size (see in the following part). 
+* _FASTQInputFileFormat_: it allows to read a collection of short sequences from a FASTQ file. Each sequence is loaded in its entirety and returned as an istance of the _QRecord_ class. It assumes that each sequence is entirely contained in an input split or it may occupy two input splits, with the second part being smaller than a user-defined size (see in the following part).
 
-The HDFS file systems splits large files in smaller blocks of fixed size (default: 128M) called input splits. This may cause problems when parsing large FAST/FASTA/FASTQ files as a sequence may cross two or more blocks. By default, FASTdoop requires that the worker owning the input split containing the beginning of a sequence is in charge of retrieving that entire sequence. This could require that worker to ask the  worker owning the next input split for the bytes that are needed to complete that sequence, according to a user-defined look ahead buffer. (Notice that FASTdoop does not currently allow to read an entire sequence in one single record if this spans more than two blocks) Instead, if a worker owns a split containing the ending part of a sequence starting elsewhere, this part is ignored by the worker when looking for sequences to read. 
+The HDFS file systems splits large files in smaller blocks of fixed size (default: 128M) called input splits. This may cause problems when parsing large FAST/FASTA/FASTQ files as a sequence may cross two or more blocks. By default, FASTdoop requires that the worker owning the input split containing the beginning of a sequence is in charge of retrieving that entire sequence. This could require that worker to ask the  worker owning the next input split for the bytes that are needed to complete that sequence, according to a user-defined look ahead buffer. (Notice that FASTdoop does not currently allow to read an entire sequence in one single record if this spans more than two blocks) Instead, if a worker owns a split containing the ending part of a sequence starting elsewhere, this part is ignored by the worker when looking for sequences to read.
 
 When dealing with very long sequences (e.g., assembled genomes) there may be need of having different workers process different blocks of the same input file. In such a case, it may be required for a worker to have along with its input splits, also a certain number of the bytes available in the initial part of the following input splits (e.g., when doing k-mers counting, if the last character of an input split belongs to a sequence, it has to be processed together with the first k-1 characters of the following input split).
 
-It is possible to alter the behavior of FASTdoop in these cases by modifying the following configuration parameters using the _Configuration_ class available in Apache Hadoop. 
+It is possible to alter the behavior of FASTdoop in these cases by modifying the following configuration parameters using the _Configuration_ class available in Apache Hadoop.
 * _k_: determines how many bytes from the initial part of the next input split (if any) should be retrieved together with the bytes of the current input split (if any) when reading a sequence not ending before the end of the split. (This parameter is available for only the _LongReadsRecordReader_ class).
 * _look_ahead_buffer_size_: is the number of bytes coming from the initial part of the next input split and used (eventually) to complete a sequence being read in the current split. It cannot be longer than the size of the input split. (This parameter is available for the _FASTQReadsRecordReader_ and _ShortReadsRecordReader_ classes).
 
@@ -165,7 +240,7 @@ Configuration conf = new Configuration();
 		}
 	}
 ```
-	
+
 A usage example of the three readers is provided in the directory src/fastoop/test.
 
 
@@ -179,14 +254,17 @@ as it can be managed using the provided Maven project. In this case, it is only 
 The Maven dependecies are:
 * [Apache Hadoop Common 2.7.0](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common/2.7.0)
 * [Apache Hadoop MapReduce Core 2.7.0](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core/2.7.0)
+* [Apache Spark Core 2.3.0](https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.11/2.3.0)
+* [Apache Spark SQL 2.3.0](https://mvnrepository.com/artifact/org.apache.spark/spark-sql_2.11/2.3.0)
 
 The building process can also be issued via terminal, by moving in the FASTdoop main directory and running the following command-line:
 
 ```console
 mvn install
 ```
+
 (Using Ant)
-You can also build FASTdoop from scratch using the Hadoop libraries installed on your own computer. 
+Finally, you can build FASTdoop from scratch using the Hadoop libraries installed on your own computer. 
 The compilation process uses the __ant__ software (see http://ant.apache.org). Be also sure to have
 the ```$HADOOP_HOME``` environment variable set at the Hadoop installation path and, then,
 run the following commands from the shell:
