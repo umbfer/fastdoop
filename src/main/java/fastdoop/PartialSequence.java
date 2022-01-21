@@ -113,9 +113,10 @@ public class PartialSequence implements Serializable {
 	}
 
 	/**
-	 * The 1-based position in the sequence where this fragment begins, or -1 if the position is
+	 * The 1-based position in the full sequence where this fragment begins, or -1 if the position is
 	 * not known.
-	 * @return
+	 * If this fragment contains whitespace (e.g. because the underlying file was a multi-line FASTA),
+	 * then the position refers to the first non-whitespace character.
 	 */
 	public long getSeqPosition() { return seqPosition; }
 
@@ -123,7 +124,6 @@ public class PartialSequence implements Serializable {
 
 	/**
 	 * Is this PartialSequence a complete sequence (not partial)?
-	 * @return
 	 */
 	public boolean isComplete() { return isComplete; }
 
