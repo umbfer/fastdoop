@@ -58,7 +58,7 @@ case class FAIRecord(id: String, length: Long, start: Long, bpsPerLine: Int, byt
  *
  * Partial sequences are read together with (k-1) bps from the next part to ensure that full k-mers can be processed.
  *
- * Thge reader for every split must stream the FAI file. Thus, it is not recommended to use this reader for e.g. short
+ * The reader for every split must stream the FAI file. Thus, it is not recommended to use this reader for e.g. short
  * reads, or when the maximum size of a sequence is relatively small.
  * [[ShortReadsRecordReader]] and [[FASTQReadsRecordReader]] are better suited to such a task.
  * For reading a single long sequence without a FAI index, [[LongReadsRecordReader]] can be used instead.
