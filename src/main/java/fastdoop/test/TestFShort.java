@@ -86,9 +86,9 @@ public class TestFShort extends Configured implements Tool {
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 
-	public static class MyMapper extends Mapper<NullWritable, Record, NullWritable, NullWritable> {
+	public static class MyMapper extends Mapper<Text, Record, NullWritable, NullWritable> {
 		@Override
-		public void map(NullWritable key, Record value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, Record value, Context context) throws IOException, InterruptedException {
 			String header = value.getKey();
 			String sequence = value.getValue();
 			

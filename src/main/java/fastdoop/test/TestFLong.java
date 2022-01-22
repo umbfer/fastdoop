@@ -83,9 +83,9 @@ public class TestFLong extends Configured implements Tool {
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 
-	public static class MyMapper extends Mapper<NullWritable, PartialSequence, NullWritable, NullWritable> {
+	public static class MyMapper extends Mapper<Text, PartialSequence, NullWritable, NullWritable> {
 		@Override
-		public void map(NullWritable key, PartialSequence value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, PartialSequence value, Context context) throws IOException, InterruptedException {
 			String header = value.getKey();
 			String sequence = value.getValue();
 			
