@@ -83,9 +83,9 @@ public class TestFQ extends Configured implements Tool {
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 
-	public static class MyMapper extends Mapper<NullWritable, QRecord, NullWritable, NullWritable> {
+	public static class MyMapper extends Mapper<Text, QRecord, NullWritable, NullWritable> {
 		@Override
-		public void map(NullWritable key, QRecord value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, QRecord value, Context context) throws IOException, InterruptedException {
 			String header = value.getKey();
 			String sequence = value.getValue();
 			

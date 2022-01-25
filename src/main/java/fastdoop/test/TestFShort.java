@@ -28,52 +28,55 @@ import org.apache.hadoop.util.*;
 
 import fastdoop.FASTAlongInputFileFormat;
 import fastdoop.FASTAshortInputFileFormat;
-import fastdoop.PartialSequence;
+import fastdoop.Record;
 
 import org.apache.hadoop.mapreduce.lib.input.*; 
 import org.apache.hadoop.mapreduce.lib.output.*;
 
 /**
- * A Simple Hadoop application useful to test {@code FASTAshortInputFileFormat}.
+ * A Simple Hadoop application useful to test {@code FASTAlongInputFileFormat}.
  * 
  * @author Gianluca Roscigno
  * 
  * @version 1.0
  * 
- * @see FASTAshortInputFileFormat
+ * @see FASTAlongInputFileFormat
  */
 
 
-public class TestFLong extends Configured implements Tool {
+public class TestFShort extends Configured implements Tool {
 
+	
 	public static void main(String args[]) {
 		if (args.length<1){
-			System.out.println("Usage: TestFLong input_file");
+			System.out.println("Usage: TestFShort input_file");
 			System.exit(1);
 		}
 
 		try {
-			ToolRunner.run(new TestFLong(), args);
+			ToolRunner.run(new TestFShort(), args);
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
+	
+
 	public int run(String[] args) throws Exception {
 		String hdfsInputFile = args[0];
-		String hdfsOutputFile = "dummy8";
+		String hdfsOutputFile = "dummy";
 		Path hdfsInputPath = new Path(hdfsInputFile);
 		Path hdfsOutputPath = new Path(hdfsOutputFile);
 		Configuration conf = getConf();
-		conf.set("k","100");
-		String jobname = "FASTAlongInputFileFormat Test";
+		String jobname = "FASTAshortInputFileFormat Test";
 		Job job = Job.getInstance(conf, jobname);
+		FileSystem fs = FileSystem.get(conf);
+		fs.delete(hdfsOutputPath, true);
 		job.setNumReduceTasks(0);
 		FileInputFormat.setInputPaths(job, hdfsInputPath);
 		FileOutputFormat.setOutputPath(job, hdfsOutputPath);
 		job.setJarByClass(this.getClass());
-		job.setInputFormatClass(FASTAlongInputFileFormat.class);
+		job.setInputFormatClass(FASTAshortInputFileFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		job.setMapOutputKeyClass(NullWritable.class);
 		job.setMapOutputValueClass(NullWritable.class);
@@ -83,9 +86,9 @@ public class TestFLong extends Configured implements Tool {
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 
-	public static class MyMapper extends Mapper<NullWritable, PartialSequence, NullWritable, NullWritable> {
+	public static class MyMapper extends Mapper<Text, Record, NullWritable, NullWritable> {
 		@Override
-		public void map(NullWritable key, PartialSequence value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, Record value, Context context) throws IOException, InterruptedException {
 			String header = value.getKey();
 			String sequence = value.getValue();
 			

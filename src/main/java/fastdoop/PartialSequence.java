@@ -37,6 +37,8 @@ public class PartialSequence implements Serializable {
 	private int startValue; 
 	private int endValue; 
 	private int bytesToProcess;
+	private long seqPosition = -1;
+	private boolean isComplete = false;
 
 	public String getKey(){
 		return header;
@@ -65,7 +67,9 @@ public class PartialSequence implements Serializable {
 				", bufferSize=" + (endValue - startValue + 1) +
 				", startValue=" + startValue + 
 				", endValue=" + endValue + 
-				", bytesToProcess=" + bytesToProcess + "]";
+				", bytesToProcess=" + bytesToProcess +
+				", seqPosition=" + seqPosition + "]" +
+				" ,complete=" + isComplete;
 	}
 
 	public byte[] getBuffer() {
@@ -108,5 +112,20 @@ public class PartialSequence implements Serializable {
 		this.endValue = endValue;
 	}
 
-	
+	/**
+	 * The 1-based position in the full sequence where this fragment begins, or -1 if the position is
+	 * not known.
+	 * If this fragment contains whitespace (e.g. because the underlying file was a multi-line FASTA),
+	 * then the position refers to the first non-whitespace character.
+	 */
+	public long getSeqPosition() { return seqPosition; }
+
+	public void setSeqPosition(long seqPosition) { this.seqPosition = seqPosition; }
+
+	/**
+	 * Is this PartialSequence a complete sequence (not partial)?
+	 */
+	public boolean isComplete() { return isComplete; }
+
+	public void setComplete(boolean complete) { this.isComplete = complete; }
 }
